@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="Css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <title>ExpenseFlow – History</title>
+</head>
+<body>
+
+  <header class="analysis-header">
+    <h1>History</h1>
+    <div class="month-selector-wrap">
+      <select id="month-select"></select>
+      <i class="fa-solid fa-chevron-down"></i>
+    </div>
+  </header>
+
+  <main class="analysis-main">
+
+   
+    <!-- Expenses Report Card -->
+    <section class="card expenses-report-card">
+      <h2 class="section-title">Expenses Report</h2>
+      <div class="chart-wrapper">
+        <canvas id="expenses-chart"></canvas>
+        <div class="chart-center-label">
+          <p id="chart-total">₦0</p>
+          <span>Total</span>
+        </div>
+      </div>
+      <p id="no-expense-msg" class="empty-state hidden">No expenses recorded this month.</p>
+    </section>
+
+    <!-- Expenses Breakdown -->
+    <section class="expenses-breakdown-section">
+      <h2 class="section-title">Expenses Breakdown</h2>
+      <div id="breakdown-list"></div>
+    </section>
+
+    <!-- All Transactions -->
+    <section class="all-transactions-section">
+      <div class="section-header-row">
+        <h2 class="section-title no-margin">All Transactions</h2>
+        <button id="see-all-btn" class="see-all-btn">See all</button>
+      </div>
+      <div id="transactions-list"></div>
+    </section>
+
+  </main>
+
+  <footer>
+    <nav class="bottom-nav">
+      <ul>
+        <li>
+          <a href="dashboard.html">
+            <i class="fa-solid fa-house"></i>
+            <span>Home</span>
+          </a>
+        </li>
+        <li>
+          <a href="analysis.html" class="active">
+            <i class="fa-solid fa-chart-pie"></i>
+            <span>Analysis</span>
+          </a>
+        </li>
+        <li>
+          <a href="settings.html">
+            <i class="fa-solid fa-gear"></i>
+            <span>Settings</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+  <script src="js/analysis.js"></script>
+</body>
+</html>

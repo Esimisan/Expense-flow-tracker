@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Auth guard: redirect to index if not registered -->
+  <script>
+    if (!localStorage.getItem('expenseflow_user')) {
+      window.location.replace('index.html');
+    }
+  </script>
+  <link rel="stylesheet" type="text/css" href="Css/style.css">
+  <link rel="stylesheet" type="text/css" href="Css/dashboard-extra.css">
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <title>ExpenseFlow – Dashboard</title>
+</head>
+<body>
+
+<header>
+  <div class="top-left">
+    <div class="title">
+      <h1>Dashboard</h1>
+    </div>
+    <div id="current-date" class="date">
+      <p id="current-month">March, 2026</p>
+    </div>
+    <!-- Welcome message — populated by JS -->
+    <p id="welcome-msg" class="welcome-msg"></p>
+  </div>
+
+  <div class="top-right">
+    <div id="avatar-image" class="avatar">
+      <img id="header-avatar" src="/images/Property 1=04.png" alt="User-avatar">
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="balance-card" id="balance-card">
+    <div class="balance-info">
+      <h3>Current Balance</h3>
+      <p id="balance">₦0.00</p>
+    </div>
+    <div class="balance-icon">
+      <i class="fa-solid fa-wallet"></i>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stats-card total-income">
+      <div class="income-icon">
+        <i class="fa-solid fa-arrow-trend-up"></i>
+      </div>
+      <div class="income-info">
+        <h3>Total Income</h3>
+        <p id="total-income">₦0.00</p>
+      </div>
+    </div>
+
+    <div class="stats-card total-expenses">
+      <div class="expense-icon">
+        <i class="fa-solid fa-arrow-trend-down"></i>
+      </div>
+      <div class="expense-info">
+        <h3>Total Expenses</h3>
+        <p id="total-expenses">₦0.00</p>
+        <!-- Budget exceeded warning — shown by JS when expenses exceed budget -->
+        <p id="budget-warning" class="budget-warning hidden">
+          <i class="fa-solid fa-triangle-exclamation"></i> Budget exceeded
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Transaction Input -->
+  <div class="transaction-input">
+    <h3>Add Transaction</h3>
+    <div class="transaction-form">
+      <div class="transaction-amount">
+        <label for="amount">Amount</label>
+        <input id="amount" type="number" placeholder="₦0.00" min="0">
+      </div>
+
+      <div class="transaction-type">
+        <label for="type">Type</label>
+        <button type="button" class="income-btn">+ Income</button>
+        <button type="button" class="expense-btn">- Expense</button>
+      </div>
+
+      <div class="transaction-category">
+        <label for="category">Category</label>
+        <select id="category">
+          <option value="">Select category</option>
+          <option value="salary">Salary</option>
+          <option value="food & dining">Food &amp; Dining</option>
+          <option value="rent">Rent</option>
+          <option value="transport">Transportation</option>
+          <option value="shopping">Shopping</option>
+          <option value="healthcare">Healthcare</option>
+          <option value="bills & utilities">Bills &amp; Utilities</option>
+          <option value="entertainment">Entertainment</option>
+          <option value="freelance">Freelance</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <div class="transaction-date">
+        <label for="date">Date</label>
+        <input id="date" type="date">
+      </div>
+
+      <div class="transaction-note">
+        <label for="note">Note (Optional)</label>
+        <textarea id="note" placeholder="Add a note..."></textarea>
+      </div>
+
+      <button type="button" class="add-transaction-btn" id="transaction-button">
+        Add Transaction
+      </button>
+    </div>
+  </div>
+
+  <!-- Recent Activity -->
+  <section class="recent-activity">
+    <h2>Recent Activity</h2>
+    <div id="activity-list" class="activity-list"></div>
+  </section>
+</main>
+
+<footer>
+  <nav class="bottom-nav">
+    <ul>
+      <li>
+        <a href="dashboard.html" class="active">
+          <i class="fa-solid fa-house"></i>
+          Home
+        </a>
+      </li>
+      <li>
+        <a href="analysis.html">
+          <i class="fa-solid fa-chart-pie"></i>
+          Analysis
+        </a>
+      </li>
+      <li>
+        <a href="settings.html">
+          <i class="fa-solid fa-gear"></i>
+          Settings
+        </a>
+      </li>
+    </ul>
+  </nav>
+</footer>
+
+<script src="js/dashboard.js"></script>
+</body>
+</html>

@@ -108,7 +108,7 @@
 .input-wrap input {
   width: 100%;
   padding: 0.65rem 0.75rem 0.65rem 2.25rem;
-  border: 0.03rem solid #cccccc;
+  border: 01px solid #cccccc;
   border-radius: 7px;
   font-size: 0.875rem;
   color: #333333;
@@ -356,12 +356,12 @@ header {
 
 .transaction-amount input {
     padding: .6rem;
-    border: .03rem solid #333333;
+    border: 1px solid #333333;
     border-radius: 7px;
 }
 
 .transaction-amount input:focus {
-    border: .1rem solid #4f86ff;
+    border: 1px solid #4f86ff;
     outline: none;
 }
 
@@ -382,7 +382,7 @@ header {
     width: 34vw;
     padding: 1rem 1.8rem 1rem 1.8rem;
     border-radius: 7px;
-    border: .03rem solid #333333;
+    border: 1px solid #333333;
     align-items: center;
     cursor: pointer;
 }
@@ -417,7 +417,7 @@ header {
 .transaction-category select {
     background-color: #ffffff;
     padding: .6rem;
-    border: .03rem solid #333333;
+    border: 1px solid #333333;
     border-radius: 7px;
     font-size: .8rem;
     color: #333333;
@@ -425,7 +425,7 @@ header {
 }
 
 .transaction-category select:focus {
-    border: .1rem solid #4f86ff;
+    border: 1px solid #4f86ff;
     outline: none;
 }
 
@@ -449,7 +449,7 @@ header {
 .transaction-date input {
     background-color: #ffffff;
     padding: .6rem;
-    border: .03rem solid #333333;
+    border: 1px solid #333333;
     border-radius: 7px;
     font-size: .8rem;
     color: #333333;
@@ -477,7 +477,7 @@ header {
 .transaction-note textarea {
     background-color: #ffffff;
     padding: 1.5rem;
-    border: .03rem solid #333333;
+    border: 1px solid #333333;
     border-radius: 7px;
     font-size: .8rem;
     color: #333333;
@@ -834,7 +834,7 @@ body.dark-mode .picker-label {
   background: #ffffff;
   padding: 0.45rem 0.9rem;
   border-radius: 6.25rem;
-  border: 0.03rem solid #cccccc;
+  border: 01px solid #cccccc;
   cursor: pointer;
   box-shadow: 0 0.125rem 0.3125rem rgba(0, 0, 0, 0.08);
 }
@@ -1233,7 +1233,7 @@ body.dark-mode .picker-label {
 
 .settings-fieldset {
   background: #ffffff;
-  border: 0.09rem solid #4f86ff;
+  border: 1px solid #4f86ff;
   border-radius: 10px;
   padding: 1.25rem;
   box-shadow: 0 0.125rem 0.3125rem rgba(0, 0, 0, 0.07);
@@ -1309,7 +1309,7 @@ body.dark-mode .picker-label {
 .settings-select-wrap select {
   width: 100%;
   padding: 0.65rem 2rem 0.65rem 0.75rem;
-  border: 0.03rem solid #cccccc;
+  border: 01px solid #cccccc;
   border-radius: 7px;
   font-size: 0.875rem;
   color: #333333;
@@ -1336,7 +1336,7 @@ body.dark-mode .picker-label {
 .budget-input-wrap {
   display: flex;
   align-items: center;
-  border: 0.03rem solid #cccccc;
+  border: 01px solid #cccccc;
   border-radius: 7px;
   overflow: hidden;
   transition: border-color 0.2s;
@@ -1350,7 +1350,7 @@ body.dark-mode .picker-label {
   font-size: 0.875rem;
   color: #888888;
   background: #f9f9f9;
-  border-right: 0.03rem solid #cccccc;
+  border-right: 01px solid #cccccc;
   user-select: none;
 }
 
@@ -1423,7 +1423,7 @@ body.dark-mode .picker-label {
 
 .sign-out-btn {
   background: #ffffff;
-  border: 0.09rem solid #4f86ff;
+  border: 1px solid #4f86ff;
   color: #4f86ff;
 }
 
@@ -1432,7 +1432,7 @@ body.dark-mode .picker-label {
 
 .clear-btn {
   background: #ffffff;
-  border: 0.09rem solid #e74c3c;
+  border: 1px solid #e74c3c;
   color: #e74c3c;
 }
 

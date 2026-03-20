@@ -1362,6 +1362,8 @@ body.dark-mode .picker-label {
   font-size: 0.875rem;
   color: #333333;
   background: #ffffff;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .budget-input-wrap input::-webkit-outer-spin-button,

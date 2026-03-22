@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>if (!localStorage.getItem('expenseflow_user')) { window.location.replace('index.html'); }</script>
   <link rel="stylesheet" href="Css/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <title>ExpenseFlow – History</title>
@@ -19,27 +20,60 @@
 
   <main class="analysis-main">
 
-   
-    <!-- Expenses Report Card -->
-    <section class="card expenses-report-card">
-      <h2 class="section-title">Expenses Report</h2>
-      <div class="chart-wrapper">
-        <canvas id="expenses-chart"></canvas>
-        <div class="chart-center-label">
-          <p id="chart-total">₦0</p>
-          <span>Total</span>
+    <!-- Carousel Indicators -->
+    <div class="carousel-indicators">
+      <span class="indicator active" data-index="0"></span>
+      <span class="indicator" data-index="1"></span>
+    </div>
+
+    <!-- Slider -->
+    <div class="slider-container">
+      <div class="slider-track" id="slider-track">
+
+        <!-- SLIDE 1: Expenses -->
+        <div class="slide">
+          <section class="expenses-report-card">
+            <h2 class="section-title">Expenses Report</h2>
+            <div class="chart-wrapper">
+              <canvas id="expenses-chart"></canvas>
+              <div class="chart-center-label">
+                <p id="chart-total">₦0</p>
+                <span>Total</span>
+              </div>
+            </div>
+            <p id="no-expense-msg" class="empty-state hidden">No expenses recorded this month.</p>
+          </section>
+
+          <section class="expenses-breakdown-section">
+            <h2 class="section-title">Expenses Breakdown</h2>
+            <div id="breakdown-list"></div>
+          </section>
         </div>
+
+        <!-- SLIDE 2: Income -->
+        <div class="slide">
+          <section class="income-report-card">
+            <h2 class="section-title">Income Report</h2>
+            <div class="chart-wrapper">
+              <canvas id="income-chart"></canvas>
+              <div class="chart-center-label">
+                <p id="income-chart-total">₦0</p>
+                <span>Total</span>
+              </div>
+            </div>
+            <p id="no-income-msg" class="empty-state hidden">No income recorded this month.</p>
+          </section>
+
+          <section class="income-breakdown-section">
+            <h2 class="section-title">Income Breakdown</h2>
+            <div id="income-breakdown-list"></div>
+          </section>
+        </div>
+
       </div>
-      <p id="no-expense-msg" class="empty-state hidden">No expenses recorded this month.</p>
-    </section>
+    </div>
 
-    <!-- Expenses Breakdown -->
-    <section class="expenses-breakdown-section">
-      <h2 class="section-title">Expenses Breakdown</h2>
-      <div id="breakdown-list"></div>
-    </section>
-
-    <!-- All Transactions -->
+    <!-- All Transactions — outside slider -->
     <section class="all-transactions-section">
       <div class="section-header-row">
         <h2 class="section-title no-margin">All Transactions</h2>
@@ -56,19 +90,19 @@
         <li>
           <a href="dashboard.html">
             <i class="fa-solid fa-house"></i>
-            <span>Home</span>
+            Home
           </a>
         </li>
         <li>
           <a href="analysis.html" class="active">
             <i class="fa-solid fa-chart-pie"></i>
-            <span>Analysis</span>
+            Analysis
           </a>
         </li>
         <li>
           <a href="settings.html">
             <i class="fa-solid fa-gear"></i>
-            <span>Settings</span>
+            Settings
           </a>
         </li>
       </ul>

@@ -10,7 +10,6 @@
     }
   </script>
   <link rel="stylesheet" type="text/css" href="Css/style.css">
-  <link rel="stylesheet" type="text/css" href="Css/dashboard-extra.css">
   <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <title>ExpenseFlow – Dashboard</title>
 </head>
@@ -30,7 +29,7 @@
 
   <div class="top-right">
     <div id="avatar-image" class="avatar">
-      <img id="header-avatar" src="images/Property 1=04.png" alt="User-avatar">
+      <img id="header-avatar" src="/images/Property 1=04.png" alt="User-avatar">
     </div>
   </div>
 </header>
@@ -91,22 +90,31 @@
         <label for="category">Category</label>
         <select id="category">
           <option value="">Select category</option>
-          <option value="salary">Salary</option>
-          <option value="food & dining">Food &amp; Dining</option>
-          <option value="rent">Rent</option>
-          <option value="transport">Transportation</option>
-          <option value="shopping">Shopping</option>
-          <option value="healthcare">Healthcare</option>
-          <option value="bills & utilities">Bills &amp; Utilities</option>
-          <option value="entertainment">Entertainment</option>
-          <option value="freelance">Freelance</option>
-          <option value="other">Other</option>
+          <!-- Income categories — shown when Income is selected -->
+          <optgroup id="income-categories" label="Income" class="hidden">
+            <option value="salary">Salary</option>
+            <option value="freelance">Freelance</option>
+            <option value="business">Business</option>
+            <option value="investments">Investments</option>
+            <option value="gifts">Gifts</option>
+          </optgroup>
+          <!-- Expense categories — shown when Expense is selected -->
+          <optgroup id="expense-categories" label="Expenses" class="hidden">
+            <option value="food & dining">Food &amp; Dining</option>
+            <option value="rent">Rent</option>
+            <option value="transport">Transportation</option>
+            <option value="shopping">Shopping</option>
+            <option value="healthcare">Healthcare</option>
+            <option value="bills & utilities">Bills &amp; Utilities</option>
+            <option value="entertainment">Entertainment</option>
+            <option value="other">Other</option>
+          </optgroup>
         </select>
       </div>
 
       <div class="transaction-date">
         <label for="date">Date</label>
-        <input id="date" type="date" placeholder="dd/mm/yyyy">
+        <input id="date" type="date">
       </div>
 
       <div class="transaction-note">
@@ -154,5 +162,4 @@
 
 <script src="js/dashboard.js"></script>
 </body>
-
 </html>

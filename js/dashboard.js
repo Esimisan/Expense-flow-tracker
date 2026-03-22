@@ -178,7 +178,13 @@ function updateDashboard() {
 // =====================
 function getIconForCategory(category) {
   const icons = {
+    // Income
     'salary':            'fa-briefcase',
+    'freelance':         'fa-laptop-code',
+    'business':          'fa-store',
+    'investments':       'fa-chart-line',
+    'gifts':             'fa-gift',
+    // Expense
     'food & dining':     'fa-utensils',
     'rent':              'fa-building',
     'transport':         'fa-bus',
@@ -186,7 +192,7 @@ function getIconForCategory(category) {
     'healthcare':        'fa-heart-pulse',
     'bills & utilities': 'fa-file-invoice',
     'entertainment':     'fa-film',
-    'freelance':         'fa-laptop-code'
+    'other':             'fa-circle'
   };
   return icons[category] || 'fa-circle';
 }
@@ -207,12 +213,32 @@ function formatDate(dateString) {
 // =====================
 // RENDER ONE TRANSACTION
 // =====================
+// Category colours for recent activity icons
+const CATEGORY_COLORS = {
+  // Income
+  'salary':            { color: '#34C759', bg: 'rgba(52,199,89,0.15)' },
+  'freelance':         { color: '#0AC8B9', bg: 'rgba(10,200,185,0.15)' },
+  'business':          { color: '#5856D6', bg: 'rgba(88,86,214,0.15)' },
+  'investments':       { color: '#FF9F0A', bg: 'rgba(255,159,10,0.15)' },
+  'gifts':             { color: '#FF6584', bg: 'rgba(255,101,132,0.15)' },
+  // Expense
+  'food & dining':     { color: '#FF6B6B', bg: 'rgba(255,107,107,0.15)' },
+  'rent':              { color: '#5856D6', bg: 'rgba(88,86,214,0.15)' },
+  'transport':         { color: '#FF6584', bg: 'rgba(255,101,132,0.15)' },
+  'shopping':          { color: '#845EF7', bg: 'rgba(132,94,247,0.15)' },
+  'healthcare':        { color: '#FF9F0A', bg: 'rgba(255,159,10,0.15)' },
+  'bills & utilities': { color: '#30D158', bg: 'rgba(48,209,88,0.15)' },
+  'entertainment':     { color: '#FF453A', bg: 'rgba(255,69,58,0.15)' },
+  'other':             { color: '#8E8E93', bg: 'rgba(142,142,147,0.15)' }
+};
+
 function renderTransaction(tx) {
+  const clr  = CATEGORY_COLORS[tx.category] || { color: '#8E8E93', bg: 'rgba(142,142,147,0.15)' };
   const item = document.createElement('div');
   item.classList.add('transaction', tx.type);
   item.innerHTML = `
     <div class="transaction-info">
-      <i class="fa-solid ${tx.icon}"></i>
+      <i class="fa-solid ${tx.icon}" style="color:${clr.color}; background-color:${clr.bg};"></i>
       <div class="details">
         <p class="category">${tx.category}</p>
         <p class="date">${formatDate(tx.date)}</p>
@@ -270,18 +296,46 @@ function clearForm() {
 
 
 // =====================
+// CATEGORY FILTER
+// Shows only relevant categories based on selected type
+// =====================
+function filterCategories(type) {
+  const incomeGroup  = document.getElementById('income-categories');
+  const expenseGroup = document.getElementById('expense-categories');
+  const select       = document.getElementById('category');
+
+  // Reset selection
+  select.value = '';
+
+  if (type === 'income') {
+    incomeGroup.classList.remove('hidden');
+    expenseGroup.classList.add('hidden');
+    // Disable expense options so they can't be tabbed to
+    Array.from(expenseGroup.options).forEach(o => o.disabled = true);
+    Array.from(incomeGroup.options).forEach(o => o.disabled = false);
+  } else {
+    expenseGroup.classList.remove('hidden');
+    incomeGroup.classList.add('hidden');
+    Array.from(incomeGroup.options).forEach(o => o.disabled = true);
+    Array.from(expenseGroup.options).forEach(o => o.disabled = false);
+  }
+}
+
+// =====================
 // TYPE BUTTON EVENTS
 // =====================
 incomeBtn.addEventListener('click', () => {
   selectedType = 'income';
   incomeBtn.classList.add('active');
   expenseBtn.classList.remove('active');
+  filterCategories('income');
 });
 
 expenseBtn.addEventListener('click', () => {
   selectedType = 'expense';
   expenseBtn.classList.add('active');
   incomeBtn.classList.remove('active');
+  filterCategories('expense');
 });
 
 

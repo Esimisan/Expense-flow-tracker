@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="Css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <title>ExpenseFlow – Welcome</title>
+  <script>
+    // If already registered, skip straight to dashboard
+    if (localStorage.getItem('expenseflow_user')) {
+      window.location.replace('dashboard.html');
+    }
+  </script>
+</head>
+
+<body class="register-body">
+
+  <div class="register-page">
+
+    <!-- Logo / App name -->
+    <div class="brand">
+      <div class="brand-icon">
+        <i class="fa-solid fa-wallet"></i>
+      </div>
+      <h1 class="brand-name">ExpenseFlow</h1>
+      <p class="brand-tagline">Track every naira, every day.</p>
+    </div>
+
+    <!-- Registration card -->
+    <div class="register-card">
+      <h2>Create your account</h2>
+      <p class="register-sub">Enter your details to get started</p>
+
+      <div class="input-group">
+        <label for="first-name">First Name</label>
+        <div class="input-wrap">
+          <i class="fa-solid fa-user"></i>
+          <input id="first-name" type="text" placeholder="e.g. Osariemen" autocomplete="given-name">
+        </div>
+        <span class="field-error hidden" id="err-first-name">Please enter your first name.</span>
+      </div>
+
+      <div class="input-group">
+        <label for="last-name">Last Name</label>
+        <div class="input-wrap">
+          <i class="fa-solid fa-user"></i>
+          <input id="last-name" type="text" placeholder="e.g. Obamogie" autocomplete="family-name">
+        </div>
+        <span class="field-error hidden" id="err-last-name">Please enter your last name.</span>
+      </div>
+
+      <div class="input-group">
+        <label for="email">Email Address</label>
+        <div class="input-wrap">
+          <i class="fa-solid fa-envelope"></i>
+          <input id="email" type="email" placeholder="you@example.com" autocomplete="email">
+        </div>
+        <span class="field-error hidden" id="err-email">Please enter a valid email address.</span>
+      </div>
+
+      <button type="button" class="submit-btn" id="register-btn">
+        Get Started <i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </div>
+
+  </div>
+
+  <script src="js/index.js"></script>
+</body>
+</html>

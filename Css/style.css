@@ -463,18 +463,18 @@ header {
   outline: none;
 }
 
-.transaction-note {
+.transaction-description {
     display: flex;
     flex-direction: column;
     margin: 2rem;
 }
 
-.transaction-note label {
+.transaction-description label {
     font-weight: 600;
     margin-bottom: 1rem;
 }
 
-.transaction-note textarea {
+.transaction-description textarea {
     background-color: #ffffff;
     padding: 1.5rem;
     border: 1px solid #333333;
@@ -483,7 +483,7 @@ header {
     color: #333333;
 }
 
-.transaction-note textarea:focus {
+.transaction-description textarea:focus {
     border-color: #4f86ff;
     background-color: #f0f8ff;
     outline: none;
@@ -566,8 +566,6 @@ header {
     display: flex;
     flex-direction: column;
 }
-
-.category { font-weight: 500; }
 
 .expense .activity-amount {
     font-weight: 700;
@@ -659,9 +657,8 @@ body.dark-mode .transaction-amount label,
 body.dark-mode .transaction-type label,
 body.dark-mode .transaction-category label,
 body.dark-mode .transaction-date label,
-body.dark-mode .transaction-note label,
+body.dark-mode .transaction-description label,
 body.dark-mode .recent-activity h2,
-body.dark-mode .category,
 body.dark-mode .transaction-input h3 {
   color: #e0e0e0;
 }
@@ -669,7 +666,7 @@ body.dark-mode .transaction-input h3 {
 body.dark-mode .transaction-amount input,
 body.dark-mode .transaction-category select,
 body.dark-mode .transaction-date input,
-body.dark-mode .transaction-note textarea {
+body.dark-mode .transaction-description textarea {
   background-color: #0f3460;
   border-color: #334466;
   color: #e0e0e0;
@@ -968,6 +965,12 @@ body.dark-mode .picker-label {
   margin-bottom: 0.75rem;
   box-shadow: 0 0.125rem 0.3125rem rgba(0, 0, 0, 0.1);
   animation: fadeSlideUp 0.35s ease both;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.breakdown-item:active {
+  transform: scale(0.98);
 }
 
 .breakdown-top {
@@ -1546,4 +1549,194 @@ body.dark-mode .income-report-card {
 @keyframes fadeSlideUp {
   from { opacity: 0; transform: translateY(0.5rem); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ===========================
+   CATEGORY DETAIL MODAL (bottom sheet)
+   =========================== */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.modal-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-overlay.hidden {
+  display: none;
+}
+
+.category-modal {
+  width: 100%;
+  max-width: 30rem;
+  max-height: 75vh;
+  background: #ffffff;
+  border-radius: 1.25rem 1.25rem 0 0;
+  box-shadow: 0 -0.25rem 1.5rem rgba(0, 0, 0, 0.15);
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-overlay.visible .category-modal {
+  transform: translateY(0);
+}
+
+.modal-handle {
+  width: 2.5rem;
+  height: 0.3rem;
+  background: #e0e0e0;
+  border-radius: 1rem;
+  margin: 0.75rem auto 0.25rem;
+  flex-shrink: 0;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.25rem 1rem;
+  border-bottom: 1px solid #f0f0f0;
+  flex-shrink: 0;
+}
+
+.modal-header-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.modal-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.modal-icon i { font-size: 1rem; }
+
+#modal-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #333333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#modal-subtitle {
+  font-size: 0.75rem;
+  color: #888888;
+  margin-top: 0.15rem;
+}
+
+.modal-close-btn {
+  background: #f2f8fc;
+  border: none;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #555555;
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+}
+
+.modal-close-btn:hover  { background: #e5e5ea; }
+.modal-close-btn:active { background: #d8d8dc; }
+
+.modal-body {
+  overflow-y: auto;
+  padding: 0.25rem 1.25rem 1.5rem;
+}
+
+.modal-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.modal-row:last-child { border-bottom: none; }
+
+.modal-row-desc {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #333333;
+  flex: 1;
+  min-width: 0;
+  padding-right: 0.75rem;
+}
+
+.modal-row-date {
+  font-size: 0.7rem;
+  color: #aaaaaa;
+  margin-top: 0.15rem;
+}
+
+.modal-row-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+
+.modal-row-amount {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.modal-row-amount.income  { color: #27ae60; }
+.modal-row-amount.expense { color: #e74c3c; }
+
+body.dark-mode .category-modal {
+  background-color: #16213e;
+}
+
+body.dark-mode .modal-header {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .modal-handle {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+body.dark-mode #modal-title {
+  color: #e0e0e0;
+}
+
+body.dark-mode .modal-close-btn {
+  background: rgba(255, 255, 255, 0.08);
+  color: #e0e0e0;
+}
+
+body.dark-mode .modal-close-btn:hover { background: rgba(255, 255, 255, 0.15); }
+
+body.dark-mode .modal-row {
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+body.dark-mode .modal-row-desc {
+  color: #e0e0e0;
 }

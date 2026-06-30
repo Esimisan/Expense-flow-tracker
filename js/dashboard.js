@@ -27,7 +27,7 @@ const welcomeMsgEl     = document.getElementById('welcome-msg');
 const amountInput      = document.getElementById('amount');
 const categorySelect   = document.getElementById('category');
 const dateInput        = document.getElementById('date');
-const noteInput        = document.getElementById('note');
+const descriptionInput = document.getElementById('description');
 const addTransactionBtn = document.getElementById('transaction-button');
 const incomeBtn        = document.querySelector('.income-btn');
 const expenseBtn       = document.querySelector('.expense-btn');
@@ -199,6 +199,16 @@ function getIconForCategory(category) {
 
 
 // =====================
+// TITLE CASE
+// Capitalizes the first letter of each word (e.g. "food & dining" -> "Food & Dining")
+// =====================
+function toTitleCase(str) {
+  if (!str) return '';
+  return str.replace(/\w\S*/g, word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase());
+}
+
+
+// =====================
 // FORMAT DATE
 // =====================
 function formatDate(dateString) {
@@ -234,15 +244,18 @@ const CATEGORY_COLORS = {
 
 function renderTransaction(tx) {
   const clr  = CATEGORY_COLORS[tx.category] || { color: '#8E8E93', bg: 'rgba(142,142,147,0.15)' };
+  const description = (tx.description && tx.description.trim())
+    ? tx.description
+    : (tx.note && tx.note.trim()) ? tx.note : toTitleCase(tx.category); // fallback for legacy entries
   const item = document.createElement('div');
   item.classList.add('transaction', tx.type);
   item.innerHTML = `
     <div class="transaction-info">
       <i class="fa-solid ${tx.icon}" style="color:${clr.color}; background-color:${clr.bg};"></i>
       <div class="details">
-        <p class="category">${tx.category}</p>
-        <p class="date">${formatDate(tx.date)}</p>
-        ${tx.note ? `<p class="note">${tx.note}</p>` : ''}
+        <p class="tx-title">${description}</p>
+        <p class="tx-category">${toTitleCase(tx.category)}</p>
+        <p class="tx-date">${formatDate(tx.date)}</p>
       </div>
       <div class="activity-amount">
         <p>${tx.type === 'income' ? '+' : '-'}${fmt(tx.amount)}</p>
@@ -285,11 +298,11 @@ function addTransaction(transaction) {
 // CLEAR FORM
 // =====================
 function clearForm() {
-  amountInput.value    = '';
-  categorySelect.value = '';
-  dateInput.value      = '';
-  noteInput.value      = '';
-  selectedType         = null;
+  amountInput.value      = '';
+  categorySelect.value   = '';
+  dateInput.value        = '';
+  descriptionInput.value = '';
+  selectedType            = null;
   incomeBtn.classList.remove('active');
   expenseBtn.classList.remove('active');
 }
@@ -352,6 +365,10 @@ addTransactionBtn.addEventListener('click', () => {
     alert('Please enter a valid amount greater than zero.');
     return;
   }
+  if (!descriptionInput.value.trim()) {
+    alert('Please add a description.');
+    return;
+  }
   if (!categorySelect.value) {
     alert('Please select a category.');
     return;
@@ -362,12 +379,12 @@ addTransactionBtn.addEventListener('click', () => {
   }
 
   addTransaction({
-    amount:   amountValue,
-    type:     selectedType,
-    category: categorySelect.value,
-    date:     dateInput.value,
-    note:     noteInput.value.trim(),
-    icon:     getIconForCategory(categorySelect.value)
+    amount:      amountValue,
+    type:        selectedType,
+    description: descriptionInput.value.trim(),
+    category:    categorySelect.value,
+    date:        dateInput.value,
+    icon:        getIconForCategory(categorySelect.value)
   });
 });
 

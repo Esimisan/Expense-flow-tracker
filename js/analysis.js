@@ -287,7 +287,7 @@ function renderIncomeChart(incomeByCategory) {
 // -------------------------------------------------------
 // RENDER BREAKDOWN (shared logic)
 // -------------------------------------------------------
-function renderBreakdown(byCategory, listId, getConfigFn) {
+function renderBreakdown(byCategory, listId, getConfigFn, txList, type) {
   const list = document.getElementById(listId);
   list.innerHTML = '';
 
@@ -328,6 +328,11 @@ function renderBreakdown(byCategory, listId, getConfigFn) {
       </div>
     `;
 
+    item.addEventListener('click', () => {
+      const categoryTxs = txList.filter(tx => tx.category === category);
+      openCategoryModal(cfg, categoryTxs, type);
+    });
+
     list.appendChild(item);
   });
 
@@ -338,6 +343,50 @@ function renderBreakdown(byCategory, listId, getConfigFn) {
       });
     });
   });
+}
+
+// -------------------------------------------------------
+// CATEGORY DETAIL MODAL
+// -------------------------------------------------------
+function openCategoryModal(cfg, transactions, type) {
+  const overlay   = document.getElementById('category-modal-overlay');
+  const iconWrap  = document.getElementById('modal-icon');
+  const iconEl    = document.getElementById('modal-icon-i');
+  const titleEl   = document.getElementById('modal-title');
+  const subtitleEl = document.getElementById('modal-subtitle');
+  const bodyEl    = document.getElementById('modal-body');
+
+  iconWrap.style.background = cfg.bg;
+  iconEl.className = `fa-solid ${cfg.icon}`;
+  iconEl.style.color = cfg.color;
+  titleEl.textContent = cfg.label;
+  subtitleEl.textContent = `${transactions.length} transaction${transactions.length !== 1 ? 's' : ''}`;
+
+  const sorted = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  bodyEl.innerHTML = sorted.map(tx => {
+    const desc = (tx.description && tx.description.trim())
+      ? tx.description
+      : (tx.note && tx.note.trim()) ? tx.note : cfg.label; // fallback for legacy entries
+    return `
+      <div class="modal-row">
+        <p class="modal-row-desc">${desc}</p>
+        <div class="modal-row-right">
+          <p class="modal-row-amount ${type}">${type === 'income' ? '+' : '-'}${formatCurrencyFull(tx.amount)}</p>
+          <p class="modal-row-date">${formatDate(tx.date)}</p>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  overlay.classList.remove('hidden');
+  requestAnimationFrame(() => overlay.classList.add('visible'));
+}
+
+function closeCategoryModal() {
+  const overlay = document.getElementById('category-modal-overlay');
+  overlay.classList.remove('visible');
+  setTimeout(() => overlay.classList.add('hidden'), 300);
 }
 
 // -------------------------------------------------------
@@ -367,7 +416,9 @@ function renderTransactions(transactions) {
 
   toRender.forEach((tx, i) => {
     const cfg   = tx.type === 'income' ? getIncomeConfig(tx.category) : getExpenseConfig(tx.category);
-    const title = (tx.note && tx.note.trim()) ? tx.note : cfg.label;
+    const title = (tx.description && tx.description.trim())
+      ? tx.description
+      : (tx.note && tx.note.trim()) ? tx.note : cfg.label; // fallback for legacy entries
 
     const item = document.createElement('div');
     item.classList.add('tx-item');
@@ -457,9 +508,12 @@ function renderAnalysis(selectedYM) {
   const all      = loadTransactions();
   const monthTxs = all.filter(tx => tx.date && tx.date.startsWith(selectedYM));
 
+  const monthExpenseTxs = monthTxs.filter(tx => tx.type === 'expense');
+  const monthIncomeTxs  = monthTxs.filter(tx => tx.type === 'income');
+
   // Group expenses by category
   const expensesByCategory = {};
-  monthTxs.filter(tx => tx.type === 'expense').forEach(tx => {
+  monthExpenseTxs.forEach(tx => {
     if (!expensesByCategory[tx.category]) expensesByCategory[tx.category] = { total: 0, count: 0 };
     expensesByCategory[tx.category].total += tx.amount;
     expensesByCategory[tx.category].count++;
@@ -467,7 +521,7 @@ function renderAnalysis(selectedYM) {
 
   // Group income by category
   const incomeByCategory = {};
-  monthTxs.filter(tx => tx.type === 'income').forEach(tx => {
+  monthIncomeTxs.forEach(tx => {
     if (!incomeByCategory[tx.category]) incomeByCategory[tx.category] = { total: 0, count: 0 };
     incomeByCategory[tx.category].total += tx.amount;
     incomeByCategory[tx.category].count++;
@@ -475,8 +529,8 @@ function renderAnalysis(selectedYM) {
 
   renderExpenseChart(expensesByCategory);
   renderIncomeChart(incomeByCategory);
-  renderBreakdown(expensesByCategory, 'breakdown-list', getExpenseConfig);
-  renderBreakdown(incomeByCategory, 'income-breakdown-list', getIncomeConfig);
+  renderBreakdown(expensesByCategory, 'breakdown-list', getExpenseConfig, monthExpenseTxs, 'expense');
+  renderBreakdown(incomeByCategory, 'income-breakdown-list', getIncomeConfig, monthIncomeTxs, 'income');
   renderTransactions(monthTxs);
 }
 
@@ -511,5 +565,12 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('see-all-btn').addEventListener('click', () => {
     showAll = !showAll;
     renderTransactions(cachedTransactions);
+  });
+
+  // Category modal dismiss handlers
+  const modalOverlay = document.getElementById('category-modal-overlay');
+  document.getElementById('modal-close-btn').addEventListener('click', closeCategoryModal);
+  modalOverlay.addEventListener('click', (e) => {
+    if (e.target === modalOverlay) closeCategoryModal();
   });
 });

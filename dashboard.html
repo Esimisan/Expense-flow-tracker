@@ -9,7 +9,7 @@
       window.location.replace('index.html');
     }
   </script>
-  <link rel="stylesheet" type="text/css" href="Css/style.css">
+  <link rel="stylesheet" type="text/css" href="style.css">
   <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <title>ExpenseFlow – Dashboard</title>
 </head>
@@ -86,6 +86,11 @@
         <button type="button" class="expense-btn">- Expense</button>
       </div>
 
+      <div class="transaction-description">
+        <label for="description">Description</label>
+        <textarea id="description" placeholder="What's this for?"></textarea>
+      </div>
+
       <div class="transaction-category">
         <label for="category">Category</label>
         <select id="category">
@@ -115,11 +120,6 @@
       <div class="transaction-date">
         <label for="date">Date</label>
         <input id="date" type="date">
-      </div>
-
-      <div class="transaction-note">
-        <label for="note">Note (Optional)</label>
-        <textarea id="note" placeholder="Add a note..."></textarea>
       </div>
 
       <button type="button" class="add-transaction-btn" id="transaction-button">
@@ -160,6 +160,6 @@
   </nav>
 </footer>
 
-<script src="js/dashboard.js"></script>
+<script src="dashboard.js"></script>
 </body>
 </html>

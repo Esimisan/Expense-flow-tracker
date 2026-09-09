@@ -1,6 +1,4 @@
-/* 
-   analysis.js — ExpenseFlow
-   */
+// analysis.js — ExpenseFlow
 
 // EXPENSE CATEGORY CONFIG
 

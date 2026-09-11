@@ -1,0 +1,47 @@
+import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
+
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+  },
+  {
+    timestamps: true, //add createdAt and updatedAt automatically
+  },
+);
+
+//TO hash the pasword, hashing will only be done to a brand new unhashed pasword
+
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) {
+    return next();
+  }
+
+  const salt = await bcrypt.genSalt(10);
+  this.pasword = await bcrypt.hash(this.password, salt);
+  next();
+});
+
+// instace of comapring a plain-text pasword to the stored hash
+userSchema.methods.matchPassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
+
+const User = mongoose.model("User", userSchema);
+
+export default User;

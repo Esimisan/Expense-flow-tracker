@@ -1,0 +1,42 @@
+name: Deploy Frontend to GitHub Pages
+
+on:
+  # Runs on every push to main
+  push:
+    branches: ["main"]
+
+  # Lets you trigger a deploy manually from the Actions tab
+  workflow_dispatch:
+
+# Allow only one concurrent deployment, skipping runs queued between the
+# run in-progress and latest queued. Cancels in-progress runs when a new
+# one starts, so you don't get out-of-order deploys.
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+# Permissions needed for the deploy-pages action to publish the site
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Upload Frontend folder as Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Only this folder gets published — backend/ is never included
+          path: ./Frontend
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

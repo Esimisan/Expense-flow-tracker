@@ -1,302 +1,14 @@
-// analysis.js — ExpenseFlow
+//analysis.js — ExpenseFlow
 
-// EXPENSE CATEGORY CONFIG
-
-const EXPENSE_CONFIG = {
-  "food & dining": {
-    color: "#FF6B6B",
-    bg: "#FFE9E9",
-    icon: "fa-utensils",
-    label: "Food & Dining",
-  },
-  rent: {
-    color: "#5856D6",
-    bg: "#EEEEFF",
-    icon: "fa-building",
-    label: "Housing",
-  },
-  transport: {
-    color: "#FF6584",
-    bg: "#FFE9EE",
-    icon: "fa-car",
-    label: "Transportation",
-  },
-  shopping: {
-    color: "#845EF7",
-    bg: "#F0EBFF",
-    icon: "fa-bag-shopping",
-    label: "Shopping",
-  },
-  healthcare: {
-    color: "#FF9F0A",
-    bg: "#FFF4E0",
-    icon: "fa-heart-pulse",
-    label: "Healthcare",
-  },
-  "bills & utilities": {
-    color: "#30D158",
-    bg: "#E5FAE9",
-    icon: "fa-file-invoice",
-    label: "Bills & Utilities",
-  },
-  entertainment: {
-    color: "#FF453A",
-    bg: "#FFE8E7",
-    icon: "fa-film",
-    label: "Entertainment",
-  },
-  other: {
-    color: "#8E8E93",
-    bg: "#F2F2F7",
-    icon: "fa-circle-dot",
-    label: "Other",
-  },
-};
-
-// INCOME CATEGORY CONFIG
-
-const INCOME_CONFIG = {
-  salary: {
-    color: "#34C759",
-    bg: "#E9F8EE",
-    icon: "fa-briefcase",
-    label: "Salary",
-  },
-  freelance: {
-    color: "#0AC8B9",
-    bg: "#E0FAF8",
-    icon: "fa-laptop-code",
-    label: "Freelance",
-  },
-  business: {
-    color: "#5856D6",
-    bg: "#EEEEFF",
-    icon: "fa-store",
-    label: "Business",
-  },
-  investments: {
-    color: "#FF9F0A",
-    bg: "#FFF4E0",
-    icon: "fa-chart-line",
-    label: "Investments",
-  },
-  gifts: {
-    color: "#FF6584",
-    bg: "#FFE9EE",
-    icon: "fa-gift",
-    label: "Gifts",
-  },
-};
-
-function getExpenseConfig(category) {
-  return (
-    EXPENSE_CONFIG[category] || {
-      color: "#8E8E93",
-      bg: "#F2F2F7",
-      icon: "fa-circle-dot",
-      label: category,
-    }
-  );
-}
-
-function getIncomeConfig(category) {
-  return (
-    INCOME_CONFIG[category] || {
-      color: "#34C759",
-      bg: "#E9F8EE",
-      icon: "fa-circle-dot",
-      label: category,
-    }
-  );
-}
-
-// LOAD FROM LOCAL STORAGE
-
-function loadTransactions() {
-  const saved = localStorage.getItem("expenseflow_transactions");
-  return saved ? JSON.parse(saved) : [];
-}
-
-// MONTH UTILITIES
-
-function getAvailableMonths(transactions) {
-  const set = new Set();
-  const now = new Date();
-  const currentYM = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-  set.add(currentYM);
-  transactions.forEach((tx) => {
-    if (tx.date) set.add(tx.date.substring(0, 7));
-  });
-  return [...set].sort((a, b) => b.localeCompare(a));
-}
-
-const MONTH_NAMES = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
-
-function monthYMToLabel(ym) {
-  const [year, month] = ym.split("-");
-  const now = new Date();
-  const label = MONTH_NAMES[parseInt(month, 10) - 1];
-  return parseInt(year, 10) === now.getFullYear() ? label : `${label} ${year}`;
-}
-
-// CURRENCY SYMBOL
-
-const CURRENCY_SYMBOLS = {
-  AED: "د.إ",
-  AFN: "؋",
-  ALL: "L",
-  AMD: "֏",
-  ARS: "$",
-  AUD: "A$",
-  AZN: "₼",
-  BAM: "KM",
-  BDT: "৳",
-  BGN: "лв",
-  BHD: ".د.ب",
-  BND: "B$",
-  BOB: "Bs.",
-  BRL: "R$",
-  BWP: "P",
-  BYN: "Br",
-  BZD: "BZ$",
-  CAD: "C$",
-  CHF: "Fr",
-  CLP: "$",
-  CNY: "¥",
-  COP: "$",
-  CRC: "₡",
-  CZK: "Kč",
-  DKK: "kr",
-  DOP: "RD$",
-  DZD: "دج",
-  EGP: "£",
-  ETB: "Br",
-  EUR: "€",
-  GBP: "£",
-  GEL: "₾",
-  GHS: "₵",
-  GTQ: "Q",
-  HKD: "HK$",
-  HNL: "L",
-  HRK: "kn",
-  HUF: "Ft",
-  IDR: "Rp",
-  ILS: "₪",
-  INR: "₹",
-  IQD: "ع.د",
-  IRR: "﷼",
-  ISK: "kr",
-  JMD: "J$",
-  JOD: "JD",
-  JPY: "¥",
-  KES: "KSh",
-  KGS: "лв",
-  KHR: "៛",
-  KRW: "₩",
-  KWD: "KD",
-  KZT: "₸",
-  LBP: "£",
-  LKR: "₨",
-  LYD: "LD",
-  MAD: "MAD",
-  MDL: "L",
-  MMK: "K",
-  MUR: "₨",
-  MXN: "$",
-  MYR: "RM",
-  MZN: "MT",
-  NAD: "N$",
-  NGN: "₦",
-  NOK: "kr",
-  NPR: "₨",
-  NZD: "NZ$",
-  OMR: "﷼",
-  PAB: "B/.",
-  PEN: "S/",
-  PHP: "₱",
-  PKR: "₨",
-  PLN: "zł",
-  QAR: "﷼",
-  RON: "lei",
-  RSD: "din",
-  RUB: "₽",
-  SAR: "﷼",
-  SEK: "kr",
-  SGD: "S$",
-  THB: "฿",
-  TND: "DT",
-  TRY: "₺",
-  TWD: "NT$",
-  TZS: "TSh",
-  UAH: "₴",
-  UGX: "USh",
-  USD: "$",
-  UYU: "$U",
-  UZS: "лв",
-  VES: "Bs.S",
-  VND: "₫",
-  XAF: "FCFA",
-  XOF: "CFA",
-  YER: "﷼",
-  ZAR: "R",
-  ZMW: "ZK",
-};
-
-function getCurrencySymbol() {
-  const raw = localStorage.getItem("expenseflow_settings");
-  if (!raw) return "₦";
-  const settings = JSON.parse(raw);
-  return CURRENCY_SYMBOLS[settings.currency] || "₦";
-}
-
-// FORMAT HELPERS
-
-function formatCurrencyAbbr(amount) {
-  const s = getCurrencySymbol();
-  if (amount >= 1_000_000_000)
-    return `${s}${(amount / 1_000_000_000).toFixed(1)}B`;
-  if (amount >= 1_000_000) return `${s}${(amount / 1_000_000).toFixed(1)}M`;
-  if (amount >= 1_000) return `${s}${(amount / 1_000).toFixed(0)}K`;
-  return `${s}${amount.toLocaleString("en-NG", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-}
-
-function formatCurrencyFull(amount) {
-  const s = getCurrencySymbol();
-  return `${s}${amount.toLocaleString("en-NG", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-}
-
-function formatDate(dateString) {
-  if (!dateString) return "";
-  const [year, month, day] = dateString.split("-");
-  const short = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-  return `${short[parseInt(month, 10) - 1]} ${parseInt(day, 10)}, ${year}`;
-}
+import { getTransactions } from "./modules/storage.js";
+import { applyDarkMode } from "./modules/darkmode.js";
+import { formatCurrencyFull, formatCurrencyAbbr } from "./modules/currency.js";
+import {
+  formatDate,
+  getAvailableMonths,
+  monthYMToLabel,
+} from "./modules/dateutils.js";
+import { getExpenseConfig, getIncomeConfig } from "./modules/categories.js";
 
 // POPULATE MONTH DROPDOWN
 
@@ -570,9 +282,8 @@ function closeCategoryModal() {
   setTimeout(() => overlay.classList.add("hidden"), 300);
 }
 
-// -------------------------------------------------------
 // TRANSACTIONS LIST
-// -------------------------------------------------------
+
 let showAll = false;
 let cachedTransactions = [];
 
@@ -634,9 +345,8 @@ function renderTransactions(transactions) {
   });
 }
 
-// -------------------------------------------------------
 // SLIDER
-// -------------------------------------------------------
+
 let currentSlide = 0;
 
 function goToSlide(index) {
@@ -704,11 +414,10 @@ function initSlider() {
   });
 }
 
-// -------------------------------------------------------
 // MAIN RENDER
-// -------------------------------------------------------
+
 function renderAnalysis(selectedYM) {
-  const all = loadTransactions();
+  const all = getTransactions();
   const monthTxs = all.filter(
     (tx) => tx.date && tx.date.startsWith(selectedYM),
   );
@@ -716,7 +425,6 @@ function renderAnalysis(selectedYM) {
   const monthExpenseTxs = monthTxs.filter((tx) => tx.type === "expense");
   const monthIncomeTxs = monthTxs.filter((tx) => tx.type === "income");
 
-  // Group expenses by category
   const expensesByCategory = {};
   monthExpenseTxs.forEach((tx) => {
     if (!expensesByCategory[tx.category])
@@ -725,7 +433,6 @@ function renderAnalysis(selectedYM) {
     expensesByCategory[tx.category].count++;
   });
 
-  // Group income by category
   const incomeByCategory = {};
   monthIncomeTxs.forEach((tx) => {
     if (!incomeByCategory[tx.category])
@@ -753,24 +460,12 @@ function renderAnalysis(selectedYM) {
   renderTransactions(monthTxs);
 }
 
-// -------------------------------------------------------
-// DARK MODE
-// -------------------------------------------------------
-function applyDarkMode() {
-  const raw = localStorage.getItem("expenseflow_settings");
-  if (!raw) return;
-  const settings = JSON.parse(raw);
-  if (settings.darkMode) document.body.classList.add("dark-mode");
-  else document.body.classList.remove("dark-mode");
-}
-
-// -------------------------------------------------------
 // INIT
-// -------------------------------------------------------
+
 document.addEventListener("DOMContentLoaded", () => {
   applyDarkMode();
 
-  const all = loadTransactions();
+  const all = getTransactions();
   const defaultMonth = populateMonthSelector(all);
 
   renderAnalysis(defaultMonth);
@@ -786,7 +481,6 @@ document.addEventListener("DOMContentLoaded", () => {
     renderTransactions(cachedTransactions);
   });
 
-  // Category modal dismiss handlers
   const modalOverlay = document.getElementById("category-modal-overlay");
   document
     .getElementById("modal-close-btn")

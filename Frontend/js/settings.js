@@ -1,9 +1,19 @@
-// settings.js — ExpenseFlow
+//settings.js — ExpenseFlow
 
-// AUTH GUARD
+import { requireUser } from "./modules/authGuard.js";
+import {
+  getUser,
+  saveUser,
+  getSettings,
+  saveSettings as persistSettings,
+  removeUser,
+  removeTransactions,
+} from "./modules/storage.js";
+import { applyDarkMode } from "./modules/darkmode.js";
+import { CURRENCY_SYMBOLS } from "./modules/currency.js";
 
-const rawUser = localStorage.getItem("expenseflow_user");
-if (!rawUser) window.location.replace("index.html");
+// Backstop only — the real guard is the blocking inline script in <head>.
+requireUser();
 
 // DOM REFS
 
@@ -19,29 +29,15 @@ const darkModeToggle = document.getElementById("dark-mode-toggle");
 const signOutBtn = document.getElementById("sign-out-btn");
 const clearBtn = document.getElementById("clear-btn");
 
-// APPLY DARK MODE
-
-function applyDarkMode() {
-  const raw = localStorage.getItem("expenseflow_settings");
-  if (!raw) return;
-  const settings = JSON.parse(raw);
-  if (settings.darkMode) {
-    document.body.classList.add("dark-mode");
-  } else {
-    document.body.classList.remove("dark-mode");
-  }
-}
-
 // LOAD USER PROFILE
 
 function loadProfile() {
-  const user = JSON.parse(localStorage.getItem("expenseflow_user"));
+  const user = getUser();
   profileName.textContent = `${user.firstName} ${user.lastName}`;
   profileEmail.textContent = user.email;
 
   if (user.avatar) {
     profileAvatar.src = user.avatar;
-    // Mark matching avatar option as selected
     avatarOptions.forEach((opt) => {
       opt.classList.toggle("selected", opt.dataset.src === user.avatar);
     });
@@ -51,9 +47,8 @@ function loadProfile() {
 // LOAD SAVED SETTINGS
 
 function loadSettings() {
-  const raw = localStorage.getItem("expenseflow_settings");
-  if (!raw) return;
-  const settings = JSON.parse(raw);
+  const settings = getSettings();
+  if (!settings) return;
 
   if (settings.currency) {
     currencySelect.value = settings.currency;
@@ -63,122 +58,21 @@ function loadSettings() {
   if (settings.darkMode) darkModeToggle.checked = true;
 }
 
-// Update the ₦ symbol next to the budget input
+// Update the currency symbol next to the budget input
 function updateBudgetSymbol(currencyCode) {
-  const symbols = {
-    AED: "د.إ",
-    AFN: "؋",
-    ALL: "L",
-    AMD: "֏",
-    ARS: "$",
-    AUD: "A$",
-    AZN: "₼",
-    BAM: "KM",
-    BDT: "৳",
-    BGN: "лв",
-    BHD: ".د.ب",
-    BND: "B$",
-    BOB: "Bs.",
-    BRL: "R$",
-    BWP: "P",
-    BYN: "Br",
-    BZD: "BZ$",
-    CAD: "C$",
-    CHF: "Fr",
-    CLP: "$",
-    CNY: "¥",
-    COP: "$",
-    CRC: "₡",
-    CZK: "Kč",
-    DKK: "kr",
-    DOP: "RD$",
-    DZD: "دج",
-    EGP: "£",
-    ETB: "Br",
-    EUR: "€",
-    GBP: "£",
-    GEL: "₾",
-    GHS: "₵",
-    GTQ: "Q",
-    HKD: "HK$",
-    HNL: "L",
-    HRK: "kn",
-    HUF: "Ft",
-    IDR: "Rp",
-    ILS: "₪",
-    INR: "₹",
-    IQD: "ع.د",
-    IRR: "﷼",
-    ISK: "kr",
-    JMD: "J$",
-    JOD: "JD",
-    JPY: "¥",
-    KES: "KSh",
-    KGS: "лв",
-    KHR: "៛",
-    KRW: "₩",
-    KWD: "KD",
-    KZT: "₸",
-    LBP: "£",
-    LKR: "₨",
-    LYD: "LD",
-    MAD: "MAD",
-    MDL: "L",
-    MMK: "K",
-    MUR: "₨",
-    MXN: "$",
-    MYR: "RM",
-    MZN: "MT",
-    NAD: "N$",
-    NGN: "₦",
-    NOK: "kr",
-    NPR: "₨",
-    NZD: "NZ$",
-    OMR: "﷼",
-    PAB: "B/.",
-    PEN: "S/",
-    PHP: "₱",
-    PKR: "₨",
-    PLN: "zł",
-    QAR: "﷼",
-    RON: "lei",
-    RSD: "din",
-    RUB: "₽",
-    SAR: "﷼",
-    SEK: "kr",
-    SGD: "S$",
-    THB: "฿",
-    TND: "DT",
-    TRY: "₺",
-    TWD: "NT$",
-    TZS: "TSh",
-    UAH: "₴",
-    UGX: "USh",
-    USD: "$",
-    UYU: "$U",
-    UZS: "лв",
-    VES: "Bs.S",
-    VND: "₫",
-    XAF: "FCFA",
-    XOF: "CFA",
-    YER: "﷼",
-    ZAR: "R",
-    ZMW: "ZK",
-  };
   const symbolEl = document.querySelector(".budget-symbol");
-  if (symbolEl) symbolEl.textContent = symbols[currencyCode] || "₦";
+  if (symbolEl) symbolEl.textContent = CURRENCY_SYMBOLS[currencyCode] || "₦";
 }
 
 // SAVE SETTINGS
 // Called whenever any preference changes
 
 function saveSettings() {
-  const settings = {
+  persistSettings({
     currency: currencySelect.value,
     budget: budgetInput.value,
     darkMode: darkModeToggle.checked,
-  };
-  localStorage.setItem("expenseflow_settings", JSON.stringify(settings));
+  });
 }
 
 // AVATAR PICKER TOGGLE
@@ -193,19 +87,15 @@ avatarOptions.forEach((opt) => {
   opt.addEventListener("click", () => {
     const src = opt.dataset.src;
 
-    // Update displayed avatar
     profileAvatar.src = src;
 
-    // Mark as selected
     avatarOptions.forEach((o) => o.classList.remove("selected"));
     opt.classList.add("selected");
 
-    // Save to user object
-    const user = JSON.parse(localStorage.getItem("expenseflow_user"));
+    const user = getUser();
     user.avatar = src;
-    localStorage.setItem("expenseflow_user", JSON.stringify(user));
+    saveUser(user);
 
-    // Close picker
     avatarPicker.classList.add("hidden");
   });
 });
@@ -216,14 +106,11 @@ currencySelect.addEventListener("change", () => {
   saveSettings();
   updateBudgetSymbol(currencySelect.value);
 });
+
 darkModeToggle.addEventListener("change", () => {
   saveSettings();
   // Apply immediately on the settings page itself
-  if (darkModeToggle.checked) {
-    document.body.classList.add("dark-mode");
-  } else {
-    document.body.classList.remove("dark-mode");
-  }
+  document.body.classList.toggle("dark-mode", darkModeToggle.checked);
 });
 
 // Budget saves on blur (when user leaves the field)
@@ -237,7 +124,7 @@ signOutBtn.addEventListener("click", () => {
   const confirmed = confirm("Are you sure you want to sign out?");
   if (!confirmed) return;
 
-  localStorage.removeItem("expenseflow_user");
+  removeUser();
   window.location.replace("index.html");
 });
 
@@ -250,7 +137,7 @@ clearBtn.addEventListener("click", () => {
   );
   if (!confirmed) return;
 
-  localStorage.removeItem("expenseflow_transactions");
+  removeTransactions();
   alert("All data has been cleared.");
 });
 

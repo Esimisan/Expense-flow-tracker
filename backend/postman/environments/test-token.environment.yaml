@@ -1,0 +1,4 @@
+name: test-token
+values:
+  - key: token
+    secret: true

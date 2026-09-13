@@ -5,6 +5,7 @@ import connectDB from "./config/database.js";
 import authRoutes from "./routes/authRoutes.js";
 
 dotenv.config(); // this must come before the connection to database so it doest come up as undefined
+
 connectDB();
 const app = express();
 

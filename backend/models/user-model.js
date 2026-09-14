@@ -19,6 +19,24 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    avatar: {
+      type: String,
+      default: "",
+    },
+    settings: {
+      currency: {
+        type: String,
+        default: "NGN",
+      },
+      monthlyBudget: {
+        type: Number,
+        default: 0,
+      },
+      darkMode: {
+        type: Boolean,
+        default: false,
+      },
+    },
   },
   {
     timestamps: true, //add createdAt and updatedAt automatically

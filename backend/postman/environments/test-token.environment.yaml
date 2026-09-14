@@ -2,3 +2,5 @@ name: test-token
 values:
   - key: token
     secret: true
+  - key: token2
+    secret: true

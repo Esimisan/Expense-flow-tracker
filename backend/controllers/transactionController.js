@@ -30,7 +30,7 @@ const createTransaction = async (req, res) => {
     if (!type || !category || amount === undefined) {
       return res
         .status(400)
-        .json({ message: "Type, category and amounr are requried" });
+        .json({ message: "Type, category and amount are required" });
     }
 
     const transaction = await Transaction.create({

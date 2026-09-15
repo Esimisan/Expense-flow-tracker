@@ -1,0 +1,23 @@
+$kind: http-request
+url: http://localhost:5000/api/transactions
+method: POST
+body:
+  type: json
+  content: "{ \r
+
+    \    \"type\": \"income\",\r
+
+    \    \"category\": \"Salary\",\r
+
+    \    \"amount\": 2000, \r
+
+    \    \"description\": \"Monthly pay\", \r
+
+    \    \"date\": \"2026-09-01\" \r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+order: 4254392676902564

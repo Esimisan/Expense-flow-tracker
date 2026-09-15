@@ -1,0 +1,19 @@
+$kind: http-request
+url: http://localhost:5000/api/settings
+method: PUT
+headers:
+  Authorization: "{{token}}"
+body:
+  type: json
+  content: "{ \r
+
+    \    \"monthlyBudget\": 50000 \r
+
+    \    \r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+order: 933505959239600

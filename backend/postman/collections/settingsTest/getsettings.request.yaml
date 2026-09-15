@@ -1,0 +1,10 @@
+$kind: http-request
+url: http://localhost:5000/api/settings
+method: GET
+headers:
+  Authorization: "{{token}}"
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+order: 1789480970758

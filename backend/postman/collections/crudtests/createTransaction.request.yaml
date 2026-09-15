@@ -1,0 +1,23 @@
+$kind: http-request
+url: http://localhost:5000/api/transactions
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"type\": \"expense\",\r
+
+    \  \"category\": \"Groceries\",\r
+
+    \  \"amount\": 45.50,\r
+
+    \  \"description\": \"Weekly shop\",\r
+
+    \  \"date\": \"2026-09-10\"\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+order: 1789396019303

@@ -1,0 +1,18 @@
+$kind: http-request
+url: http://localhost:5000/api/transactions
+method: POST
+body:
+  type: json
+  content: |-
+    {
+      "type": "nonsense",
+      "category": "transportation",
+      "amount": 50,
+      "description": "Weekly shop",
+      "date": "2026-09-10"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+order: 4501599087020817

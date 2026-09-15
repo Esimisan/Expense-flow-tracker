@@ -1,5 +1,7 @@
 $kind: http-request
 name: New Request
-url: ""
+url: http://localhost:5000/api/auth/profile
 method: GET
+headers:
+  Authorization: Bearer {{supabase_service_role_api_key_04ze}}
 order: 3591302111922536

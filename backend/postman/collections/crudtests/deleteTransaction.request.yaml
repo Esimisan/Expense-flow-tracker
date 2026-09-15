@@ -1,0 +1,8 @@
+$kind: http-request
+url: http://localhost:5000/api/transactions/6aa8057d7282317c0ff80f24
+method: DELETE
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+order: 4498633101223456

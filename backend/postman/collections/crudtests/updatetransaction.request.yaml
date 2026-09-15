@@ -1,0 +1,11 @@
+$kind: http-request
+url: http://localhost:5000/api/transactions/6aa804da7282317c0ff80f23
+method: PUT
+body:
+  type: json
+  content: '{ "amount": 50.00 }'
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+order: 4497956586486752

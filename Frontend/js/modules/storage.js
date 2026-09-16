@@ -2,6 +2,7 @@
 
 const KEYS = {
   USER: "expenseflow_user",
+  TOKEN: "expenseflow_token",
   TRANSACTIONS: "expenseflow_transactions",
   SETTINGS: "expenseflow_settings",
 };
@@ -19,6 +20,34 @@ export function saveUser(user) {
 
 export function removeUser() {
   localStorage.removeItem(KEYS.USER);
+}
+
+// -----Token -----
+
+export function getToken() {
+  return localStorage.getItem(KEYS.TOKEN);
+}
+
+export function saveToken(token) {
+  localStorage.setItem(KEYS.TOKEN, token);
+}
+
+export function removeToken() {
+  localStorage.removeItem(KEYS.TOKEN);
+}
+
+// Decodes the token's payload (no signature check, that's the server's job via jwt.verify in the protect middleware) and compares its exp claim against the current time. Used for client-side UX only, not security.
+export function isTokenExpired(token) {
+  if (!token) return true;
+
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    const expiryMs = payload.exp * 1000; // exp is in seconds, Date.now() is ms
+    return Date.now() >= expiryMs;
+  } catch {
+    // Malformed token — treat as expired
+    return true;
+  }
 }
 
 // ---- Transactions ----

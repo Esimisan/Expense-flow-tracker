@@ -4,10 +4,26 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- Auth guard -->
+    <!-- Auth guard: redirect to index if not registered, no token, or token expired -->
     <script>
-      if (!localStorage.getItem("expenseflow_user")) {
-        window.location.replace("index.html");
-      }
+      (function () {
+        const user = localStorage.getItem("expenseflow_user");
+        const token = localStorage.getItem("expenseflow_token");
+
+        let expired = true;
+        if (token) {
+          try {
+            const payload = JSON.parse(atob(token.split(".")[1]));
+            expired = Date.now() >= payload.exp * 1000;
+          } catch {
+            expired = true;
+          }
+        }
+
+        if (!user || !token || expired) {
+          window.location.replace("index.html");
+        }
+      })();
     </script>
     <link rel="stylesheet" href="Css/style.css" />
     <link

@@ -6,7 +6,7 @@ const getTransactions = async (req, res) => {
   try {
     // we only ever return documents whose "user" field matches whoever the token belongs to. req.user was attached by the authmiddleware.
 
-    const transactions = (await Transaction.find({ user: req._id })).toSorted({
+    const transactions = await Transaction.find({ user: req.user._id }).sort({
       date: -1,
     });
     /// .sort({ date: -1 }) gives newest-first, which is what most dashboards expect by default.

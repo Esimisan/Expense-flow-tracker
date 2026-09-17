@@ -1,9 +1,9 @@
 $kind: http-request
-url: http://localhost:5000/api/transactions/6aa804da7282317c0ff80f23
+url: http://localhost:5000/api/transactions/6aabfbd5ae135ac2fc10ffc4
 method: PUT
 body:
   type: json
-  content: '{ "amount": 50.00 }'
+  content: '{ "amount": 40.00 }'
 auth:
   type: bearer
   credentials:

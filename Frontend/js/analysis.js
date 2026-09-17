@@ -11,6 +11,7 @@ import {
 import { getExpenseConfig, getIncomeConfig } from "./modules/categories.js";
 
 // POPULATE MONTH DROPDOWN
+// Unchanged — takes an already-fetched array, no storage access itself.
 
 function populateMonthSelector(transactions) {
   const months = getAvailableMonths(transactions);
@@ -30,7 +31,7 @@ function populateMonthSelector(transactions) {
 let expenseChartInstance = null;
 let incomeChartInstance = null;
 
-// RENDER EXPENSE CHART
+// RENDER EXPENSE CHART — unchanged
 
 function renderExpenseChart(expensesByCategory) {
   const ctx = document.getElementById("expenses-chart").getContext("2d");
@@ -101,7 +102,7 @@ function renderExpenseChart(expensesByCategory) {
   });
 }
 
-// RENDER INCOME CHART
+// RENDER INCOME CHART — unchanged
 
 function renderIncomeChart(incomeByCategory) {
   const ctx = document.getElementById("income-chart").getContext("2d");
@@ -172,7 +173,7 @@ function renderIncomeChart(incomeByCategory) {
   });
 }
 
-// RENDER BREAKDOWN (shared logic)
+// RENDER BREAKDOWN — unchanged
 
 function renderBreakdown(byCategory, listId, getConfigFn, txList, type) {
   const list = document.getElementById(listId);
@@ -232,7 +233,7 @@ function renderBreakdown(byCategory, listId, getConfigFn, txList, type) {
   });
 }
 
-// CATEGORY DETAIL MODAL
+// CATEGORY DETAIL MODAL — unchanged
 
 function openCategoryModal(cfg, transactions, type) {
   const overlay = document.getElementById("category-modal-overlay");
@@ -259,7 +260,7 @@ function openCategoryModal(cfg, transactions, type) {
           ? tx.description
           : tx.note && tx.note.trim()
             ? tx.note
-            : cfg.label; // fallback for legacy entries
+            : cfg.label;
       return `
       <div class="modal-row">
         <p class="modal-row-desc">${desc}</p>
@@ -282,7 +283,7 @@ function closeCategoryModal() {
   setTimeout(() => overlay.classList.add("hidden"), 300);
 }
 
-// TRANSACTIONS LIST
+// TRANSACTIONS LIST — unchanged
 
 let showAll = false;
 let cachedTransactions = [];
@@ -321,7 +322,7 @@ function renderTransactions(transactions) {
         ? tx.description
         : tx.note && tx.note.trim()
           ? tx.note
-          : cfg.label; // fallback for legacy entries
+          : cfg.label;
 
     const item = document.createElement("div");
     item.classList.add("tx-item");
@@ -345,7 +346,7 @@ function renderTransactions(transactions) {
   });
 }
 
-// SLIDER
+// SLIDER — unchanged
 
 let currentSlide = 0;
 
@@ -365,12 +366,10 @@ function initSlider() {
   const track = document.getElementById("slider-track");
   const indicators = document.querySelectorAll(".indicator");
 
-  // Indicator click
   indicators.forEach((ind, i) => {
     ind.addEventListener("click", () => goToSlide(i));
   });
 
-  // Touch swipe
   let startX = 0;
   let isDragging = false;
 
@@ -397,7 +396,6 @@ function initSlider() {
     { passive: true },
   );
 
-  // Mouse drag for desktop
   let mouseStartX = 0;
   track.addEventListener("mousedown", (e) => {
     mouseStartX = e.clientX;
@@ -415,9 +413,10 @@ function initSlider() {
 }
 
 // MAIN RENDER
+// Now async — awaits getTransactions().
 
-function renderAnalysis(selectedYM) {
-  const all = getTransactions();
+async function renderAnalysis(selectedYM) {
+  const all = await getTransactions();
   const monthTxs = all.filter(
     (tx) => tx.date && tx.date.startsWith(selectedYM),
   );
@@ -461,20 +460,25 @@ function renderAnalysis(selectedYM) {
 }
 
 // INIT
+// The DOMContentLoaded callback is now async so it can await both
+// getTransactions() and renderAnalysis(). The month-select change
+// listener needs the same treatment.
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   applyDarkMode();
 
-  const all = getTransactions();
+  const all = await getTransactions();
   const defaultMonth = populateMonthSelector(all);
 
-  renderAnalysis(defaultMonth);
+  await renderAnalysis(defaultMonth);
   initSlider();
 
-  document.getElementById("month-select").addEventListener("change", (e) => {
-    showAll = false;
-    renderAnalysis(e.target.value);
-  });
+  document
+    .getElementById("month-select")
+    .addEventListener("change", async (e) => {
+      showAll = false;
+      await renderAnalysis(e.target.value);
+    });
 
   document.getElementById("see-all-btn").addEventListener("click", () => {
     showAll = !showAll;

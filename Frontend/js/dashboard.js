@@ -6,7 +6,7 @@ import {
   saveUser,
   getSettings,
   getTransactions,
-  saveTransactions,
+  createTransaction,
 } from "./modules/storage.js";
 import { applyDarkMode } from "./modules/darkmode.js";
 import { formatCurrencyFull } from "./modules/currency.js";
@@ -38,6 +38,7 @@ const expenseBtn = document.querySelector(".expense-btn");
 
 // LOAD USER PROFILE
 // Sets avatar and welcome message
+//user is still cached in localStorage, not fetched.
 
 function loadUserProfile() {
   const user = getUser();
@@ -67,14 +68,16 @@ function setCurrentMonth() {
 }
 
 // BUDGET CHECK
+// Now async (getSettings fetches from the API). Field name fixed:
+// backend stores `monthlyBudget`, not `budget`.
 
-function checkBudget(totalExpenses) {
-  const settings = getSettings();
+async function checkBudget(totalExpenses) {
+  const settings = await getSettings();
   if (!settings || !budgetWarningEl) {
     if (budgetWarningEl) budgetWarningEl.classList.add("hidden");
     return;
   }
-  const budget = parseFloat(settings.budget);
+  const budget = parseFloat(settings.monthlyBudget);
   budgetWarningEl.classList.toggle(
     "hidden",
     !(budget > 0 && totalExpenses > budget),
@@ -82,6 +85,7 @@ function checkBudget(totalExpenses) {
 }
 
 // CALCULATE TOTALS
+// Unchanged — pure math over the in-memory `transactions` array.
 
 function calculateTotals() {
   let totalIncome = 0;
@@ -94,17 +98,17 @@ function calculateTotals() {
 }
 
 // UPDATE DASHBOARD
+// Now async because it awaits checkBudget.
 
-function updateDashboard() {
+async function updateDashboard() {
   const totals = calculateTotals();
   balanceEl.textContent = formatCurrencyFull(totals.balance);
   totalIncomeEl.textContent = formatCurrencyFull(totals.totalIncome);
   totalExpensesEl.textContent = formatCurrencyFull(totals.totalExpenses);
-  checkBudget(totals.totalExpenses);
+  await checkBudget(totals.totalExpenses);
 }
 
 // TITLE CASE
-// e.g. "food & dining" -> "Food & Dining"
 
 function toTitleCase(str) {
   if (!str) return "";
@@ -115,6 +119,7 @@ function toTitleCase(str) {
 }
 
 // RENDER ONE TRANSACTION
+// Unchanged — just renders whatever transaction object it's given.
 
 function renderTransaction(tx) {
   const cfg = getCategoryConfig(tx.type, tx.category);
@@ -123,7 +128,7 @@ function renderTransaction(tx) {
       ? tx.description
       : tx.note && tx.note.trim()
         ? tx.note
-        : toTitleCase(tx.category); // fallback for legacy entries
+        : toTitleCase(tx.category);
 
   const item = document.createElement("div");
   item.classList.add("transaction", tx.type);
@@ -145,16 +150,19 @@ function renderTransaction(tx) {
 
 // LOAD / PERSIST TRANSACTIONS
 
-function loadFromStorage() {
-  transactions = getTransactions();
+async function loadFromStorage() {
+  transactions = await getTransactions();
   [...transactions].reverse().forEach((tx) => renderTransaction(tx));
 }
 
-function addTransaction(transaction) {
-  transactions.push(transaction);
-  saveTransactions(transactions);
-  updateDashboard();
-  renderTransaction(transaction);
+// Was: push into local array + saveTransactions(wholeArray).
+// Now: create just the one transaction on the backend, then use what
+// comes back (includes Mongo's _id) as the object we keep locally.
+async function addTransaction(transaction) {
+  const created = await createTransaction(transaction);
+  transactions.push(created);
+  await updateDashboard();
+  renderTransaction(created);
   clearForm();
 }
 
@@ -171,7 +179,6 @@ function clearForm() {
 }
 
 // CATEGORY FILTER
-// Shows only relevant categories based on selected type
 
 function filterCategories(type) {
   const incomeGroup = document.getElementById("income-categories");
@@ -210,8 +217,11 @@ expenseBtn.addEventListener("click", () => {
 });
 
 // ADD TRANSACTION BUTTON
+// Now async so we can await addTransaction(). Wrapped in try/catch so a
+// failed request (network down, 401, validation error) shows up instead
+// of failing silently.
 
-addTransactionBtn.addEventListener("click", () => {
+addTransactionBtn.addEventListener("click", async () => {
   if (!selectedType) {
     alert("Please choose Income or Expense.");
     return;
@@ -234,22 +244,29 @@ addTransactionBtn.addEventListener("click", () => {
     return;
   }
 
-  /* the icon is no longer stored on the transaction object itself  it's looked up from categories.js at render time via
-  getCategoryConfig(), so icons stay correct even if the config changeslater. Older transactions saved with an "icon" field are unaffected; that field is simply ignored now. */
-
-  addTransaction({
-    amount: amountValue,
-    type: selectedType,
-    description: descriptionInput.value.trim(),
-    category: categorySelect.value,
-    date: dateInput.value,
-  });
+  try {
+    await addTransaction({
+      amount: amountValue,
+      type: selectedType,
+      description: descriptionInput.value.trim(),
+      category: categorySelect.value,
+      date: dateInput.value,
+    });
+  } catch (err) {
+    alert(`Could not save transaction: ${err.message}`);
+  }
 });
 
 // INIT
+// Wrapped in an async function so loadFromStorage() finishes (transactions
+// populated) before updateDashboard() runs its totals.
 
-applyDarkMode();
-setCurrentMonth();
-loadUserProfile();
-loadFromStorage();
-updateDashboard();
+async function init() {
+  applyDarkMode();
+  setCurrentMonth();
+  loadUserProfile();
+  await loadFromStorage();
+  await updateDashboard();
+}
+
+init();

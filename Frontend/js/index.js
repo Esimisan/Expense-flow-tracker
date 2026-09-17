@@ -1,16 +1,18 @@
 //index.js — ExpenseFlow Registration
 
-import { saveUser } from "./modules/storage.js";
+import { saveUser, saveToken, registerUser } from "./modules/storage.js";
 import { redirectIfLoggedIn } from "./modules/authGuard.js";
 
 // Backstop only — the head's inline script already redirects logged-in
 // users to the dashboard before this module ever runs.
 redirectIfLoggedIn();
 
-const firstNameInput = document.getElementById("first-name");
-const lastNameInput = document.getElementById("last-name");
+const nameInput = document.getElementById("name");
 const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const confirmPasswordInput = document.getElementById("confirm-password");
 const registerBtn = document.getElementById("register-btn");
+const formErrorEl = document.getElementById("err-form");
 
 // VALIDATION HELPERS
 
@@ -28,27 +30,32 @@ function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
+function showFormError(message) {
+  formErrorEl.textContent = message;
+  formErrorEl.classList.remove("hidden");
+}
+
+function clearFormError() {
+  formErrorEl.textContent = "";
+  formErrorEl.classList.add("hidden");
+}
+
 // REGISTER
 
-registerBtn.addEventListener("click", () => {
+registerBtn.addEventListener("click", async () => {
   let valid = true;
+  clearFormError();
 
-  const firstName = firstNameInput.value.trim();
-  const lastName = lastNameInput.value.trim();
+  const name = nameInput.value.trim();
   const email = emailInput.value.trim();
+  const password = passwordInput.value;
+  const confirmPassword = confirmPasswordInput.value;
 
-  if (!firstName) {
-    showError(firstNameInput, "err-first-name");
+  if (!name) {
+    showError(nameInput, "err-name");
     valid = false;
   } else {
-    clearError(firstNameInput, "err-first-name");
-  }
-
-  if (!lastName) {
-    showError(lastNameInput, "err-last-name");
-    valid = false;
-  } else {
-    clearError(lastNameInput, "err-last-name");
+    clearError(nameInput, "err-name");
   }
 
   if (!email || !isValidEmail(email)) {
@@ -58,25 +65,55 @@ registerBtn.addEventListener("click", () => {
     clearError(emailInput, "err-email");
   }
 
+  if (!password || password.length < 6) {
+    showError(passwordInput, "err-password");
+    valid = false;
+  } else {
+    clearError(passwordInput, "err-password");
+  }
+
+  if (!confirmPassword || confirmPassword !== password) {
+    showError(confirmPasswordInput, "err-confirm-password");
+    valid = false;
+  } else {
+    clearError(confirmPasswordInput, "err-confirm-password");
+  }
+
   if (!valid) return;
 
-  saveUser({
-    firstName,
-    lastName,
-    email,
-    avatar: "images/Property 1=04.png",
-    isNew: true,
-  });
+  registerBtn.disabled = true;
+  registerBtn.textContent = "Creating account...";
 
-  window.location.replace("dashboard.html");
+  try {
+    // confirmPassword is never sent — it's a client-side-only check.
+    const response = await registerUser({ name, email, password });
+
+    saveUser({
+      _id: response._id,
+      name: response.name,
+      email: response.email,
+      avatar: "images/Property 1=04.png",
+      isNew: true,
+    });
+    saveToken(response.token);
+
+    window.location.replace("dashboard.html");
+  } catch (err) {
+    showFormError(err.message || "Registration failed. Please try again.");
+    registerBtn.disabled = false;
+    registerBtn.innerHTML =
+      'Get Started <i class="fa-solid fa-arrow-right"></i>';
+  }
 });
 
 // Clear error styling on input
-[firstNameInput, lastNameInput, emailInput].forEach((input) => {
-  input.addEventListener("input", () => {
-    const errId = "err-" + input.id;
-    if (document.getElementById(errId)) {
-      clearError(input, errId);
-    }
-  });
-});
+[nameInput, emailInput, passwordInput, confirmPasswordInput].forEach(
+  (input) => {
+    input.addEventListener("input", () => {
+      const errId = "err-" + input.id;
+      if (document.getElementById(errId)) {
+        clearError(input, errId);
+      }
+    });
+  },
+);

@@ -50,12 +50,13 @@ function loadUserProfile() {
   }
 
   if (welcomeMsgEl) {
+    const firstName = user.name ? user.name.split(" ")[0] : "there";
     if (user.isNew) {
-      welcomeMsgEl.textContent = `Welcome, ${user.firstName} 👋`;
+      welcomeMsgEl.textContent = `Welcome, ${firstName} 👋`;
       user.isNew = false;
       saveUser(user);
     } else {
-      welcomeMsgEl.textContent = `Welcome back, ${user.firstName} 👋`;
+      welcomeMsgEl.textContent = `Welcome back, ${firstName} 👋`;
     }
   }
 }

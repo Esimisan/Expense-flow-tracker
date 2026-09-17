@@ -75,6 +75,22 @@ async function apiRequest(url, options = {}) {
   return data;
 }
 
+// ---- Auth ----
+
+export async function registerUser({ name, email, password }) {
+  return apiRequest(API.auth.register, {
+    method: "POST",
+    body: JSON.stringify({ name, email, password }),
+  });
+}
+
+export async function loginUser({ email, password }) {
+  return apiRequest(API.auth.login, {
+    method: "POST",
+    body: JSON.stringify({ email, password }),
+  });
+}
+
 // ---- Transactions ----
 // One function per backend route now, instead of "get the array / save the
 // array" — matches the CRUD routes in transactionController.js directly.

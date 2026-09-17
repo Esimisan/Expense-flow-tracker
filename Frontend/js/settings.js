@@ -36,7 +36,7 @@ const clearBtn = document.getElementById("clear-btn");
 
 function loadProfile() {
   const user = getUser();
-  profileName.textContent = `${user.firstName} ${user.lastName}`;
+  profileName.textContent = user.name;
   profileEmail.textContent = user.email;
 
   if (user.avatar) {

@@ -8,12 +8,8 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
     />
-    <title>ExpenseFlow – Sign Up</title>
+    <title>ExpenseFlow – Sign In</title>
     <script>
-      // If already logged in with a valid token, skip straight to dashboard.
-      // (Backstop only — index.js's redirectIfLoggedIn() does the real check
-      // against token expiry; this is just a blocking pre-check to avoid a
-      // flash of the register form before that runs.)
       if (
         localStorage.getItem("expenseflow_user") &&
         localStorage.getItem("expenseflow_token")
@@ -25,7 +21,6 @@
 
   <body class="register-body">
     <div class="register-page">
-      <!-- Logo / App name -->
       <div class="brand">
         <div class="brand-icon">
           <i class="fa-solid fa-wallet"></i>
@@ -34,26 +29,9 @@
         <p class="brand-tagline">Track every naira, every day.</p>
       </div>
 
-      <!-- Registration card -->
       <div class="register-card">
-        <h2>Create your account</h2>
-        <p class="register-sub">Enter your details to get started</p>
-
-        <div class="input-group">
-          <label for="name">Full Name</label>
-          <div class="input-wrap">
-            <i class="fa-solid fa-user"></i>
-            <input
-              id="name"
-              type="text"
-              placeholder="e.g. Osariemen Obamogie"
-              autocomplete="name"
-            />
-          </div>
-          <span class="field-error hidden" id="err-name"
-            >Please enter your name.</span
-          >
-        </div>
+        <h2>Welcome back</h2>
+        <p class="register-sub">Sign in to your account</p>
 
         <div class="input-group">
           <label for="email">Email Address</label>
@@ -78,43 +56,27 @@
             <input
               id="password"
               type="password"
-              placeholder="At least 6 characters"
-              autocomplete="new-password"
+              placeholder="Your password"
+              autocomplete="current-password"
             />
           </div>
           <span class="field-error hidden" id="err-password"
-            >Password must be at least 6 characters.</span
-          >
-        </div>
-
-        <div class="input-group">
-          <label for="confirm-password">Confirm Password</label>
-          <div class="input-wrap">
-            <i class="fa-solid fa-lock"></i>
-            <input
-              id="confirm-password"
-              type="password"
-              placeholder="Re-enter your password"
-              autocomplete="new-password"
-            />
-          </div>
-          <span class="field-error hidden" id="err-confirm-password"
-            >Passwords do not match.</span
+            >Please enter your password.</span
           >
         </div>
 
         <span class="field-error hidden" id="err-form"></span>
 
-        <button type="button" class="submit-btn" id="register-btn">
-          Get Started <i class="fa-solid fa-arrow-right"></i>
+        <button type="button" class="submit-btn" id="login-btn">
+          Sign In <i class="fa-solid fa-arrow-right"></i>
         </button>
 
         <p class="auth-switch">
-          Already have an account? <a href="login.html">Sign in</a>
+          Don't have an account? <a href="index.html">Sign up</a>
         </p>
       </div>
     </div>
 
-    <script type="module" src="js/index.js"></script>
+    <script type="module" src="js/login.js"></script>
   </body>
 </html>

@@ -1,6 +1,6 @@
 //dashboard.js — ExpenseFlow
 
-import { requireUser } from "./modules/authGuard.js";
+import { requireUser } from "./modules/authguard.js";
 import {
   getUser,
   saveUser,

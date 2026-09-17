@@ -1,7 +1,7 @@
 //index.js — ExpenseFlow Registration
 
 import { saveUser, saveToken, registerUser } from "./modules/storage.js";
-import { redirectIfLoggedIn } from "./modules/authGuard.js";
+import { redirectIfLoggedIn } from "./modules/authguard.js";
 
 // Backstop only — the head's inline script already redirects logged-in
 // users to the dashboard before this module ever runs.

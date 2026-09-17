@@ -1,7 +1,7 @@
 //login.js — ExpenseFlow Login
 
 import { saveUser, saveToken, loginUser } from "./modules/storage.js";
-import { redirectIfLoggedIn } from "./modules/authGuard.js";
+import { redirectIfLoggedIn } from "./modules/authguard.js";
 
 redirectIfLoggedIn();
 

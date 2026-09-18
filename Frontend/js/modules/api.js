@@ -1,6 +1,6 @@
 // api.js - centralized API configuration.
 
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = "https://expense-flow-tracker.onrender.com";
 
 const API = {
   base: BASE_URL,
